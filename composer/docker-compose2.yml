@@ -1,8 +1,8 @@
 version: '2'
 
 volumes:
-  peer0.org1.hospital.com:
-  peer1.org1.hospital.com:
+  peer0.org1.gateway.com:
+  peer1.org1.gateway.com:
 
 services:
   ca0:
@@ -11,13 +11,13 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca-org1
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.hospital.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.gateway.com-cert.pem
       - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e65792b664caa0c5a8b6e04f0c134d713a26c018d1bb7aa86f14b7873b1df893_sk
     ports:
       - "7054:7054"
-    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.hospital.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/e65792b664caa0c5a8b6e04f0c134d713a26c018d1bb7aa86f14b7873b1df893_sk -b admin:adminpw -d'
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.gateway.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/e65792b664caa0c5a8b6e04f0c134d713a26c018d1bb7aa86f14b7873b1df893_sk -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/org1.hospital.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./crypto-config/peerOrganizations/org1.gateway.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca_peerOrg1
 
   couchdb0:
@@ -29,7 +29,7 @@ services:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=admin
     # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
-    # for hospital map it to utilize Fauxton User Interface in dev environments.
+    # for gateway map it to utilize Fauxton User Interface in dev environments.
     ports:
       - "5983:5984"
 
@@ -42,22 +42,22 @@ services:
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=admin
     # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
-    # for hospital map it to utilize Fauxton User Interface in dev environments.
+    # for gateway map it to utilize Fauxton User Interface in dev environments.
     ports:
       - "6984:5984"
 
-  peer0.org1.hospital.com:
-    container_name: peer0.org1.hospital.com
+  peer0.org1.gateway.com:
+    container_name: peer0.org1.gateway.com
     extends:
       file:  base/docker-compose-base2.yaml
-      service: peer0.org1.hospital.com
+      service: peer0.org1.gateway.com
     depends_on:
       - couchdb0
 
-  peer1.org1.hospital.com:
-    container_name: peer1.org1.hospital.com
+  peer1.org1.gateway.com:
+    container_name: peer1.org1.gateway.com
     extends:
       file:  base/docker-compose-base2.yaml
-      service: peer1.org1.hospital.com
+      service: peer1.org1.gateway.com
     depends_on:
       - couchdb1

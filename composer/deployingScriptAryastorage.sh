@@ -1,5 +1,5 @@
 if [ -z ${1} ]; then
-	ls | grep hospital-network
+	ls | grep gateway-sensor
 	exit
 fi
 
@@ -10,21 +10,21 @@ ORG2_HOST=192.168.56.110
 
 composer card delete -c PeerAdmin@byfn-network-org2
 composer card delete -c PeerAdmin@byfn-network-org1
-composer card delete -c bob@hospital-network
-composer card delete -c alice@hospital-network
+composer card delete -c bob@gateway-sensor
+composer card delete -c alice@gateway-sensor
 
 rm -rv alice
 rm -rv bob
 
 
 echo "INSERT_ORG1_CA_CERT: "
-awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.hospital.com/peers/peer0.org1.hospital.com/tls/ca.crt > ./tmp/INSERT_ORG1_CA_CERT
+awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org1.gateway.com/peers/peer0.org1.gateway.com/tls/ca.crt > ./tmp/INSERT_ORG1_CA_CERT
 
 echo "INSERT_ORG2_CA_CERT: "
-awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.hospital.com/peers/peer0.org2.hospital.com/tls/ca.crt > ./tmp/INSERT_ORG2_CA_CERT
+awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/peerOrganizations/org2.gateway.com/peers/peer0.org2.gateway.com/tls/ca.crt > ./tmp/INSERT_ORG2_CA_CERT
 
 echo "INSERT_ORDERER_CA_CERT: "
-awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/hospital.com/orderers/orderer.hospital.com/tls/ca.crt > ./tmp/INSERT_ORDERER_CA_CERT
+awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' crypto-config/ordererOrganizations/gateway.com/orderers/orderer.gateway.com/tls/ca.crt > ./tmp/INSERT_ORDERER_CA_CERT
 
 
 cat << EOF > ./byfn-network-org1.json
@@ -46,27 +46,27 @@ cat << EOF > ./byfn-network-org1.json
 		}
 	},
     "channels": {
-        "rschannel": {
+        "gchannel": {
             "orderers": [
-                "orderer.hospital.com"
+                "orderer.gateway.com"
             ],
             "peers": {
-                "peer0.org1.hospital.com": {
+                "peer0.org1.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer1.org1.hospital.com": {
+                "peer1.org1.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer0.org2.hospital.com": {
+                "peer0.org2.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer1.org2.hospital.com": {
+                "peer1.org2.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
@@ -78,29 +78,29 @@ cat << EOF > ./byfn-network-org1.json
         "org1": {
             "mspid": "Org1MSP",
             "peers": [
-                "peer0.org1.hospital.com",
-                "peer1.org1.hospital.com"
+                "peer0.org1.gateway.com",
+                "peer1.org1.gateway.com"
             ],
             "certificateAuthorities": [
-                "ca.org1.hospital.com"
+                "ca.org1.gateway.com"
             ]
         },
         "org2": {
             "mspid": "Org2MSP",
             "peers": [
-                "peer0.org2.hospital.com",
-                "peer1.org2.hospital.com"
+                "peer0.org2.gateway.com",
+                "peer1.org2.gateway.com"
             ],
             "certificateAuthorities": [
-                "ca.org2.hospital.com"
+                "ca.org2.gateway.com"
             ]
         }
     },
     "orderers": {
-        "orderer.hospital.com": {
+        "orderer.gateway.com": {
             "url": "grpcs://${ORDERER_HOST}:7050",
             "grpcOptions": {
-                "ssl-target-name-override": "orderer.hospital.com"
+                "ssl-target-name-override": "orderer.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORDERER_CA_CERT`"
@@ -108,41 +108,41 @@ cat << EOF > ./byfn-network-org1.json
         }
     },
     "peers": {
-        "peer0.org1.hospital.com": {
+        "peer0.org1.gateway.com": {
             "url": "grpcs://${ORG1_HOST}:7051",
 						"eventUrl": "grpc://${ORG1_HOST}:7053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org1.hospital.com"
+                "ssl-target-name-override": "peer0.org1.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG1_CA_CERT`"
             }
         },
-        "peer1.org1.hospital.com": {
+        "peer1.org1.gateway.com": {
             "url": "grpcs://${ORG1_HOST}:8051",
 						"eventUrl": "grpc://${ORG1_HOST}:8053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer1.org1.hospital.com"
+                "ssl-target-name-override": "peer1.org1.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG1_CA_CERT`"
             }
         },
-        "peer0.org2.hospital.com": {
+        "peer0.org2.gateway.com": {
             "url": "grpcs://${ORG2_HOST}:9051",
 						"eventUrl": "grpc://${ORG2_HOST}:9053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org2.hospital.com"
+                "ssl-target-name-override": "peer0.org2.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG2_CA_CERT`"
             }
         },
-        "peer1.org2.hospital.com": {
+        "peer1.org2.gateway.com": {
             "url": "grpcs://${ORG2_HOST}:10051",
 						"eventUrl": "grpc://${ORG2_HOST}:10053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer1.org2.hospital.com"
+                "ssl-target-name-override": "peer1.org2.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG2_CA_CERT`"
@@ -150,14 +150,14 @@ cat << EOF > ./byfn-network-org1.json
         }
     },
     "certificateAuthorities": {
-        "ca.org1.hospital.com": {
+        "ca.org1.gateway.com": {
             "url": "https://${ORG1_HOST}:7054",
             "caName": "ca-org1",
             "httpOptions": {
                 "verify": false
             }
         },
-        "ca.org2.hospital.com": {
+        "ca.org2.gateway.com": {
             "url": "https://${ORG2_HOST}:8054",
             "caName": "ca-org2",
             "httpOptions": {
@@ -188,27 +188,27 @@ cat << EOF > ./byfn-network-org2.json
 		}
 	},
     "channels": {
-        "rschannel": {
+        "gchannel": {
             "orderers": [
-                "orderer.hospital.com"
+                "orderer.gateway.com"
             ],
             "peers": {
-                "peer0.org1.hospital.com": {
+                "peer0.org1.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer1.org1.hospital.com": {
+                "peer1.org1.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer0.org2.hospital.com": {
+                "peer0.org2.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
                 },
-                "peer1.org2.hospital.com": {
+                "peer1.org2.gateway.com": {
                     "endorsingPeer": true,
                     "chaincodeQuery": true,
                     "eventSource": true
@@ -220,29 +220,29 @@ cat << EOF > ./byfn-network-org2.json
         "org1": {
             "mspid": "Org1MSP",
             "peers": [
-                "peer0.org1.hospital.com",
-                "peer1.org1.hospital.com"
+                "peer0.org1.gateway.com",
+                "peer1.org1.gateway.com"
             ],
             "certificateAuthorities": [
-                "ca.org1.hospital.com"
+                "ca.org1.gateway.com"
             ]
         },
         "org2": {
             "mspid": "Org2MSP",
             "peers": [
-                "peer0.org2.hospital.com",
-                "peer1.org2.hospital.com"
+                "peer0.org2.gateway.com",
+                "peer1.org2.gateway.com"
             ],
             "certificateAuthorities": [
-                "ca.org2.hospital.com"
+                "ca.org2.gateway.com"
             ]
         }
     },
     "orderers": {
-        "orderer.hospital.com": {
+        "orderer.gateway.com": {
             "url": "grpcs://${ORDERER_HOST}:7050",
             "grpcOptions": {
-                "ssl-target-name-override": "orderer.hospital.com"
+                "ssl-target-name-override": "orderer.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORDERER_CA_CERT`"
@@ -250,41 +250,41 @@ cat << EOF > ./byfn-network-org2.json
         }
     },
     "peers": {
-        "peer0.org1.hospital.com": {
+        "peer0.org1.gateway.com": {
             "url": "grpcs://${ORG1_HOST}:7051",
 						"eventUrl": "grpc://${ORG1_HOST}:7053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org1.hospital.com"
+                "ssl-target-name-override": "peer0.org1.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG1_CA_CERT`"
             }
         },
-        "peer1.org1.hospital.com": {
+        "peer1.org1.gateway.com": {
             "url": "grpcs://${ORG1_HOST}:8051",
 						"eventUrl": "grpc://${ORG1_HOST}:8053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer1.org1.hospital.com"
+                "ssl-target-name-override": "peer1.org1.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG1_CA_CERT`"
             }
         },
-        "peer0.org2.hospital.com": {
+        "peer0.org2.gateway.com": {
             "url": "grpcs://${ORG2_HOST}:9051",
 						"eventUrl": "grpc://${ORG2_HOST}:9053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org2.hospital.com"
+                "ssl-target-name-override": "peer0.org2.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG2_CA_CERT`"
             }
         },
-        "peer1.org2.hospital.com": {
+        "peer1.org2.gateway.com": {
             "url": "grpcs://${ORG2_HOST}:10051",
 						"eventUrl": "grpc://${ORG2_HOST}:10053",
             "grpcOptions": {
-                "ssl-target-name-override": "peer1.org2.hospital.com"
+                "ssl-target-name-override": "peer1.org2.gateway.com"
             },
             "tlsCACerts": {
                 "pem": "`cat ./tmp/INSERT_ORG2_CA_CERT`"
@@ -292,14 +292,14 @@ cat << EOF > ./byfn-network-org2.json
         }
     },
     "certificateAuthorities": {
-        "ca.org1.hospital.com": {
+        "ca.org1.gateway.com": {
             "url": "https://${ORG1_HOST}:7054",
             "caName": "ca-org1",
             "httpOptions": {
                 "verify": false
             }
         },
-        "ca.org2.hospital.com": {
+        "ca.org2.gateway.com": {
             "url": "https://${ORG2_HOST}:8054",
             "caName": "ca-org2",
             "httpOptions": {
@@ -310,8 +310,8 @@ cat << EOF > ./byfn-network-org2.json
 }
 EOF
 
-ORG1ADMIN="./crypto-config/peerOrganizations/org1.hospital.com/users/Admin@org1.hospital.com/msp"
-ORG2ADMIN="./crypto-config/peerOrganizations/org2.hospital.com/users/Admin@org2.hospital.com/msp"
+ORG1ADMIN="./crypto-config/peerOrganizations/org1.gateway.com/users/Admin@org1.gateway.com/msp"
+ORG2ADMIN="./crypto-config/peerOrganizations/org2.gateway.com/users/Admin@org2.gateway.com/msp"
 
 composer card create -p ./byfn-network-org1.json -u PeerAdmin -c $ORG1ADMIN/signcerts/A*.pem -k $ORG1ADMIN/keystore/*_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org1.card
 composer card create -p ./byfn-network-org2.json -u PeerAdmin -c $ORG2ADMIN/signcerts/A*.pem -k $ORG2ADMIN/keystore/*_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org2.card
@@ -319,18 +319,18 @@ composer card create -p ./byfn-network-org2.json -u PeerAdmin -c $ORG2ADMIN/sign
 composer card import -f PeerAdmin@byfn-network-org1.card --card PeerAdmin@byfn-network-org1
 composer card import -f PeerAdmin@byfn-network-org2.card --card PeerAdmin@byfn-network-org2
 
-composer network install --card PeerAdmin@byfn-network-org1 --archiveFile hospital-network@$VERSION.bna
-composer network install --card PeerAdmin@byfn-network-org2 --archiveFile hospital-network@$VERSION.bna
+composer network install --card PeerAdmin@byfn-network-org1 --archiveFile gateway-sensor@$VERSION.bna
+composer network install --card PeerAdmin@byfn-network-org2 --archiveFile gateway-sensor@$VERSION.bna
 
 composer identity request -c PeerAdmin@byfn-network-org1 -u admin -s adminpw -d alice
 composer identity request -c PeerAdmin@byfn-network-org2 -u admin -s adminpw -d bob
 
-composer network start -c PeerAdmin@byfn-network-org1 -n hospital-network -V $VERSION -o endorsementPolicyFile=./endorsement-policy.json -A alice -C alice/admin-pub.pem -A bob -C bob/admin-pub.pem
+composer network start -c PeerAdmin@byfn-network-org1 -n gateway-sensor -V $VERSION -o endorsementPolicyFile=./endorsement-policy.json -A alice -C alice/admin-pub.pem -A bob -C bob/admin-pub.pem
 
 # create card for alice, as business network admin
-composer card create -p ./byfn-network-org1.json -u alice -n hospital-network -c alice/admin-pub.pem -k alice/admin-priv.pem
-composer card import -f alice@hospital-network.card
+composer card create -p ./byfn-network-org1.json -u alice -n gateway-sensor -c alice/admin-pub.pem -k alice/admin-priv.pem
+composer card import -f alice@gateway-sensor.card
 
 # create card for bob, as business network admin
-composer card create -p ./byfn-network-org2.json -u bob -n hospital-network -c bob/admin-pub.pem -k bob/admin-priv.pem
-composer card import -f bob@hospital-network.card
+composer card create -p ./byfn-network-org2.json -u bob -n gateway-sensor -c bob/admin-pub.pem -k bob/admin-priv.pem
+composer card import -f bob@gateway-sensor.card

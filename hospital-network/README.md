@@ -1,3 +1,0 @@
-# hospital-network
-
-hospital network

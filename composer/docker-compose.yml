@@ -1,11 +1,11 @@
 version: '2'
 
 volumes:
-  orderer.hospital.com:
+  orderer.gateway.com:
 
 services:
-  orderer.hospital.com:
+  orderer.gateway.com:
     extends:
       file:   base/docker-compose-base.yaml
-      service: orderer.hospital.com
-    container_name: orderer.hospital.com
+      service: orderer.gateway.com
+    container_name: orderer.gateway.com

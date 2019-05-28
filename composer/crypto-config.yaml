@@ -1,11 +1,11 @@
 OrdererOrgs:
   - Name: Orderer
-    Domain: hospital.com
+    Domain: gateway.com
     Specs:
       - Hostname: orderer
 PeerOrgs:
   - Name: Org1
-    Domain: org1.hospital.com
+    Domain: org1.gateway.com
     EnableNodeOUs: true
     Template:
       Count: 2
@@ -13,7 +13,7 @@ PeerOrgs:
       Count: 2
 
   - Name: Org2
-    Domain: org2.hospital.com
+    Domain: org2.gateway.com
     EnableNodeOUs: true
     Template:
       Count: 2
